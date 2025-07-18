@@ -1,0 +1,104 @@
+<app-layout [user]="currentUser" [loading]="loading" [error]="error">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Kelola Akun</h1>
+      <p class="mt-2 text-gray-600">Kelola peran admin dan hak akses pengguna</p>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-red-800">{{ error }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <span class="ml-3 text-gray-600">Memuat data pengguna...</span>
+    </div>
+
+    <!-- Users Table -->
+    <div *ngIf="!loading" class="bg-white shadow-sm rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Email Pengguna
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Nama
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Permission
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let user of users" class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.name" class="h-10 w-10 rounded-full">
+                    <div *ngIf="!user.avatar" class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                      <span class="text-gray-600 font-medium text-sm">{{ user.name.charAt(0).toUpperCase() }}</span>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">{{ user.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ user.name }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <button 
+                  (click)="toggleAccess(user)"
+                  [class]="user.can_access ? 'bg-blue-600' : 'bg-gray-200'"
+                  class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  [disabled]="loading">
+                  <span 
+                    [class]="user.can_access ? 'translate-x-6 bg-white' : 'translate-x-1 bg-white'"
+                    class="inline-block h-4 w-4 transform rounded-full transition-transform">
+                  </span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="users.length === 0" class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada pengguna ditemukan</h3>
+        <p class="mt-1 text-sm text-gray-500">Tambahkan pengguna ke sistem untuk memulai.</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-6">
+      <app-pagination
+        *ngIf="!loading && totalUsers > 0"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [totalItems]="totalUsers"
+        [itemsPerPage]="perPage"
+        [maxVisiblePages]="5"
+        (pageChange)="onPageChange($event)"
+      ></app-pagination>
+    </div>
+  </div>
+</app-layout> 

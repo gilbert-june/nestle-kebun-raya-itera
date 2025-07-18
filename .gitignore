@@ -1,0 +1,11 @@
+# Laravel
+/backend/vendor/
+/backend/node_modules/
+/backend/.env
+
+# Angular
+/frontend/node_modules/
+/frontend/dist/
+frontend/.angular/
+
+/*.log

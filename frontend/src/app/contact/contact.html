@@ -1,0 +1,41 @@
+<!-- Use shared layout component -->
+<app-layout [user]="user" [loading]="loading" [error]="error">
+  <!-- Contact Header Section -->
+  <section class="py-20 bg-gradient-to-br from-primary-50 to-primary-100">
+    <div class="container">
+      <div class="text-center max-w-4xl mx-auto">
+        <h1 class="text-4xl lg:text-5xl font-bold mb-6 text-gray-900">
+          Hubungi <span class="gradient-text">Kami</span>
+        </h1>
+        <p class="text-xl text-gray-600 leading-relaxed">
+          Kami siap membantu Anda dengan pertanyaan, saran, atau dukungan teknis. 
+          Jangan ragu untuk menghubungi tim kami.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Section -->
+  <section class="pt-20 bg-gray-50">
+    <div class="container">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold mb-4 text-gray-900">Lokasi Kami</h2>
+        <p class="text-lg text-gray-600">
+          Kunjungi kantor kami di Kebun Raya ITERA
+        </p>
+      </div>
+      
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="aspect-video bg-gray-200 flex items-center justify-center">
+          <div class="text-center">
+            <span class="text-6xl mb-4 block">🗺️</span>
+            <p class="text-gray-600">Peta lokasi akan ditampilkan di sini</p>
+            <p class="text-sm text-gray-500 mt-2">
+              Koordinat: -5.3571, 105.2667
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</app-layout> 

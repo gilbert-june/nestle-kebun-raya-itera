@@ -1,0 +1,628 @@
+<app-layout [user]="user" [loading]="loading" [error]="error">
+  <div class="mx-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-4xl font-bold text-gray-900 mb-2">📊 Pusat Ekspor Data</h1>
+          <p class="text-gray-600 text-lg">Ekspor data sensor ke file Excel untuk analisis dan pelaporan</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <!-- Date Filters for All Data Export -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h5 class="font-semibold text-gray-900 mb-3 text-sm">Rentang Tanggal Ekspor</h5>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                <input 
+                  type="date" 
+                  [(ngModel)]="allDataFilters.start_date"
+                  class="form-input w-full text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Akhir</label>
+                <input 
+                  type="date" 
+                  [(ngModel)]="allDataFilters.end_date"
+                  class="form-input w-full text-sm">
+              </div>
+            </div>
+          </div>
+          <button 
+            (click)="exportAllSensors()"
+            class="btn btn-primary btn-lg flex items-center gap-2">
+            <span>📥</span>
+            <span>Unduh Semua Data</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" *ngIf="exportStats">
+      <!-- Temperature Sensors Card -->
+      <div class="card p-6 bg-gradient-to-br from-red-50 to-orange-50 border border-red-200">
+        <div class="flex items-center gap-4">
+          <div class="text-3xl">🌡️</div>
+          <div>
+            <h3 class="text-lg font-semibold text-red-800">Sensor Suhu</h3>
+            <p class="text-2xl font-bold text-red-600">{{ exportStats.temperature_sensors.count }}</p>
+            <p class="text-sm text-red-600">Total data</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Soil Moisture Sensors Card -->
+      <div class="card p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200">
+        <div class="flex items-center gap-4">
+          <div class="text-3xl">💧</div>
+          <div>
+            <h3 class="text-lg font-semibold text-blue-800">Sensor Kelembaban Tanah</h3>
+            <p class="text-2xl font-bold text-blue-600">{{ exportStats.soil_moisture_sensors.count }}</p>
+            <p class="text-sm text-blue-600">Total data</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Light Sensors Card -->
+      <div class="card p-6 bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-200">
+        <div class="flex items-center gap-4">
+          <div class="text-3xl">💡</div>
+          <div>
+            <h3 class="text-lg font-semibold text-yellow-800">Sensor Cahaya</h3>
+            <p class="text-2xl font-bold text-yellow-600">{{ exportStats.light_sensors.count }}</p>
+            <p class="text-sm text-yellow-600">Total data</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Turbidity Sensors Card -->
+      <div class="card p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200">
+        <div class="flex items-center gap-4">
+          <div class="text-3xl">🌫️</div>
+          <div>
+            <h3 class="text-lg font-semibold text-purple-800">Sensor Kekeruhan</h3>
+            <p class="text-2xl font-bold text-purple-600">{{ exportStats.turbidity_sensors.count }}</p>
+            <p class="text-sm text-purple-600">Total data</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="text-center py-16" *ngIf="statsLoading">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+      <p class="text-gray-600">Memuat statistik ekspor...</p>
+    </div>
+
+    <!-- Sensor Tables Section -->
+    <div class="space-y-8" *ngIf="exportStats && !statsLoading">
+      <!-- Temperature Sensors Table -->
+      <div class="card border border-red-200">
+        <div class="card-header bg-gradient-to-r from-red-50 to-orange-50 border-b border-red-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">🌡️</span>
+              <div>
+                <h2 class="text-2xl font-bold text-red-800">Sensor Suhu</h2>
+                <p class="text-red-600">Ekspor data sensor suhu ke Excel</p>
+              </div>
+            </div>
+            <button 
+              (click)="exportTemperatureSensors()"
+              class="btn bg-red-600 hover:bg-red-700 text-white flex items-center gap-2">
+              <span>📥</span>
+              <span>Ekspor</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="text-center p-4 bg-blue-50 rounded-lg">
+              <div class="text-2xl font-bold text-blue-600">{{ exportStats.temperature_sensors.count }}</div>
+              <div class="text-sm text-gray-600">Total Data</div>
+            </div>
+            <div class="text-center p-4 bg-green-50 rounded-lg">
+              <div class="text-2xl font-bold text-green-600">{{ exportStats.temperature_sensors.sensor_names.length }}</div>
+              <div class="text-sm text-gray-600">Sensor Aktif</div>
+            </div>
+            <div class="text-center p-4 bg-purple-50 rounded-lg">
+              <div class="text-sm font-semibold text-purple-600">{{ formatDate(exportStats.temperature_sensors.latest_date) }}</div>
+              <div class="text-sm text-gray-600">Data Terbaru</div>
+            </div>
+          </div>
+          
+          <div class="mb-6" *ngIf="exportStats.temperature_sensors.sensor_names.length > 0">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Sensor Aktif:</h4>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                *ngFor="let sensor of exportStats.temperature_sensors.sensor_names"
+                class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                {{ sensor }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Data Table -->
+          <div class="mt-6">
+            <!-- Filters -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+              <h5 class="font-semibold text-gray-900 mb-3">Filter Tanggal</h5>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="temperatureFilters.start_date"
+                    class="form-input w-full">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Akhir</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="temperatureFilters.end_date"
+                    class="form-input w-full">
+                </div>
+              </div>
+              <div class="flex gap-2 mt-3">
+                <button 
+                  (click)="applyTemperatureFilters()"
+                  class="btn btn-primary btn-sm">
+                  Terapkan Filter
+                </button>
+                <button 
+                  (click)="clearTemperatureFilters()"
+                  class="btn btn-secondary btn-sm">
+                  Hapus Filter
+                </button>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="temperatureLoading" class="text-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
+              <p class="text-gray-600">Memuat data suhu...</p>
+            </div>
+
+            <!-- Data Table -->
+            <div *ngIf="!temperatureLoading && temperatureData" class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Sensor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Suhu (°C)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr *ngFor="let item of temperatureData.data; let i = index" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ (temperatureData.current_page - 1) * temperatureData.per_page + i + 1 }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.value }}°C</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatTableDate(item.created_at) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Pagination -->
+              <div class="mt-4" *ngIf="temperatureData && temperatureData.last_page > 1">
+                <app-pagination 
+                  [currentPage]="temperatureData.current_page"
+                  [totalPages]="temperatureData.last_page"
+                  [totalItems]="temperatureData.total"
+                  [itemsPerPage]="temperatureData.per_page"
+                  (pageChange)="onTemperaturePageChange($event)">
+                </app-pagination>
+              </div>
+            </div>
+
+            <!-- No Data State -->
+            <div *ngIf="!temperatureLoading && (!temperatureData || temperatureData.data.length === 0)" class="text-center py-8">
+              <div class="text-4xl mb-2">🌡️</div>
+              <p class="text-gray-600">Tidak ada data suhu ditemukan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Soil Moisture Sensors Table -->
+      <div class="card border border-blue-200">
+        <div class="card-header bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-blue-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">💧</span>
+              <div>
+                <h2 class="text-2xl font-bold text-blue-800">Sensor Kelembaban Tanah</h2>
+                <p class="text-blue-600">Ekspor data sensor kelembaban tanah ke Excel</p>
+              </div>
+            </div>
+            <button 
+              (click)="exportSoilMoistureSensors()"
+              class="btn bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
+              <span>📥</span>
+              <span>Ekspor</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="text-center p-4 bg-blue-50 rounded-lg">
+              <div class="text-2xl font-bold text-blue-600">{{ exportStats.soil_moisture_sensors.count }}</div>
+              <div class="text-sm text-gray-600">Total Data</div>
+            </div>
+            <div class="text-center p-4 bg-green-50 rounded-lg">
+              <div class="text-2xl font-bold text-green-600">{{ exportStats.soil_moisture_sensors.sensor_names.length }}</div>
+              <div class="text-sm text-gray-600">Sensor Aktif</div>
+            </div>
+            <div class="text-center p-4 bg-purple-50 rounded-lg">
+              <div class="text-sm font-semibold text-purple-600">{{ formatDate(exportStats.soil_moisture_sensors.latest_date) }}</div>
+              <div class="text-sm text-gray-600">Data Terbaru</div>
+            </div>
+          </div>
+          
+          <div class="mb-6" *ngIf="exportStats.soil_moisture_sensors.sensor_names.length > 0">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Sensor Aktif:</h4>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                *ngFor="let sensor of exportStats.soil_moisture_sensors.sensor_names"
+                class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                {{ sensor }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Data Table -->
+          <div class="mt-6">
+            <!-- Filters -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+              <h5 class="font-semibold text-gray-900 mb-3">Filter Tanggal</h5>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="soilMoistureFilters.start_date"
+                    class="form-input w-full">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Akhir</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="soilMoistureFilters.end_date"
+                    class="form-input w-full">
+                </div>
+              </div>
+              <div class="flex gap-2 mt-3">
+                <button 
+                  (click)="applySoilMoistureFilters()"
+                  class="btn btn-primary btn-sm">
+                  Terapkan Filter
+                </button>
+                <button 
+                  (click)="clearSoilMoistureFilters()"
+                  class="btn btn-secondary btn-sm">
+                  Hapus Filter
+                </button>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="soilMoistureLoading" class="text-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
+              <p class="text-gray-600">Memuat data kelembaban tanah...</p>
+            </div>
+
+            <!-- Data Table -->
+            <div *ngIf="!soilMoistureLoading && soilMoistureData" class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Sensor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelembaban Tanah (%)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr *ngFor="let item of soilMoistureData.data; let i = index" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ (soilMoistureData.current_page - 1) * soilMoistureData.per_page + i + 1 }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.value }}%</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatTableDate(item.created_at) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Pagination -->
+              <div class="mt-4" *ngIf="soilMoistureData && soilMoistureData.last_page > 1">
+                <app-pagination 
+                  [currentPage]="soilMoistureData.current_page"
+                  [totalPages]="soilMoistureData.last_page"
+                  [totalItems]="soilMoistureData.total"
+                  [itemsPerPage]="soilMoistureData.per_page"
+                  (pageChange)="onSoilMoisturePageChange($event)">
+                </app-pagination>
+              </div>
+            </div>
+
+            <!-- No Data State -->
+            <div *ngIf="!soilMoistureLoading && (!soilMoistureData || soilMoistureData.data.length === 0)" class="text-center py-8">
+              <div class="text-4xl mb-2">💧</div>
+              <p class="text-gray-600">Tidak ada data kelembaban tanah ditemukan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Light Sensors Table -->
+      <div class="card border border-yellow-200">
+        <div class="card-header bg-gradient-to-r from-yellow-50 to-amber-50 border-b border-yellow-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">💡</span>
+              <div>
+                <h2 class="text-2xl font-bold text-yellow-800">Sensor Cahaya</h2>
+                <p class="text-yellow-600">Ekspor data sensor cahaya ke Excel</p>
+              </div>
+            </div>
+            <button 
+              (click)="exportLightSensors()"
+              class="btn bg-yellow-600 hover:bg-yellow-700 text-white flex items-center gap-2">
+              <span>📥</span>
+              <span>Ekspor</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="text-center p-4 bg-blue-50 rounded-lg">
+              <div class="text-2xl font-bold text-blue-600">{{ exportStats.light_sensors.count }}</div>
+              <div class="text-sm text-gray-600">Total Data</div>
+            </div>
+            <div class="text-center p-4 bg-green-50 rounded-lg">
+              <div class="text-2xl font-bold text-green-600">{{ exportStats.light_sensors.sensor_names.length }}</div>
+              <div class="text-sm text-gray-600">Sensor Aktif</div>
+            </div>
+            <div class="text-center p-4 bg-purple-50 rounded-lg">
+              <div class="text-sm font-semibold text-purple-600">{{ formatDate(exportStats.light_sensors.latest_date) }}</div>
+              <div class="text-sm text-gray-600">Data Terbaru</div>
+            </div>
+          </div>
+          
+          <div class="mb-6" *ngIf="exportStats.light_sensors.sensor_names.length > 0">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Sensor Aktif:</h4>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                *ngFor="let sensor of exportStats.light_sensors.sensor_names"
+                class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                {{ sensor }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Data Table -->
+          <div class="mt-6">
+            <!-- Filters -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+              <h5 class="font-semibold text-gray-900 mb-3">Filter Tanggal</h5>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="lightFilters.start_date"
+                    class="form-input w-full">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Akhir</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="lightFilters.end_date"
+                    class="form-input w-full">
+                </div>
+              </div>
+              <div class="flex gap-2 mt-3">
+                <button 
+                  (click)="applyLightFilters()"
+                  class="btn btn-primary btn-sm">
+                  Terapkan Filter
+                </button>
+                <button 
+                  (click)="clearLightFilters()"
+                  class="btn btn-secondary btn-sm">
+                  Hapus Filter
+                </button>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="lightLoading" class="text-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
+              <p class="text-gray-600">Memuat data cahaya...</p>
+            </div>
+
+            <!-- Data Table -->
+            <div *ngIf="!lightLoading && lightData" class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Sensor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Intensitas Cahaya (lux)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr *ngFor="let item of lightData.data; let i = index" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ (lightData.current_page - 1) * lightData.per_page + i + 1 }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.value }} lux</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatTableDate(item.created_at) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Pagination -->
+              <div class="mt-4" *ngIf="lightData && lightData.last_page > 1">
+                <app-pagination 
+                  [currentPage]="lightData.current_page"
+                  [totalPages]="lightData.last_page"
+                  [totalItems]="lightData.total"
+                  [itemsPerPage]="lightData.per_page"
+                  (pageChange)="onLightPageChange($event)">
+                </app-pagination>
+              </div>
+            </div>
+
+            <!-- No Data State -->
+            <div *ngIf="!lightLoading && (!lightData || lightData.data.length === 0)" class="text-center py-8">
+              <div class="text-4xl mb-2">💡</div>
+              <p class="text-gray-600">Tidak ada data cahaya ditemukan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Turbidity Sensors Table -->
+      <div class="card border border-purple-200">
+        <div class="card-header bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-purple-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">🌫️</span>
+              <div>
+                <h2 class="text-2xl font-bold text-purple-800">Sensor Kekeruhan</h2>
+                <p class="text-purple-600">Ekspor data sensor kekeruhan ke Excel</p>
+              </div>
+            </div>
+            <button 
+              (click)="exportTurbiditySensors()"
+              class="btn bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2">
+              <span>📥</span>
+              <span>Ekspor</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="text-center p-4 bg-blue-50 rounded-lg">
+              <div class="text-2xl font-bold text-blue-600">{{ exportStats.turbidity_sensors.count }}</div>
+              <div class="text-sm text-gray-600">Total Data</div>
+            </div>
+            <div class="text-center p-4 bg-green-50 rounded-lg">
+              <div class="text-2xl font-bold text-green-600">{{ exportStats.turbidity_sensors.sensor_names.length }}</div>
+              <div class="text-sm text-gray-600">Sensor Aktif</div>
+            </div>
+            <div class="text-center p-4 bg-purple-50 rounded-lg">
+              <div class="text-sm font-semibold text-purple-600">{{ formatDate(exportStats.turbidity_sensors.latest_date) }}</div>
+              <div class="text-sm text-gray-600">Data Terbaru</div>
+            </div>
+          </div>
+          
+          <div class="mb-6" *ngIf="exportStats.turbidity_sensors.sensor_names.length > 0">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Sensor Aktif:</h4>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                *ngFor="let sensor of exportStats.turbidity_sensors.sensor_names"
+                class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                {{ sensor }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Data Table -->
+          <div class="mt-6">
+            <!-- Filters -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+              <h5 class="font-semibold text-gray-900 mb-3">Filter Tanggal</h5>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="turbidityFilters.start_date"
+                    class="form-input w-full">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Akhir</label>
+                  <input 
+                    type="date" 
+                    [(ngModel)]="turbidityFilters.end_date"
+                    class="form-input w-full">
+                </div>
+              </div>
+              <div class="flex gap-2 mt-3">
+                <button 
+                  (click)="applyTurbidityFilters()"
+                  class="btn btn-primary btn-sm">
+                  Terapkan Filter
+                </button>
+                <button 
+                  (click)="clearTurbidityFilters()"
+                  class="btn btn-secondary btn-sm">
+                  Hapus Filter
+                </button>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="turbidityLoading" class="text-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
+              <p class="text-gray-600">Memuat data kekeruhan...</p>
+            </div>
+
+            <!-- Data Table -->
+            <div *ngIf="!turbidityLoading && turbidityData" class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Sensor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turbidity (NTU)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr *ngFor="let item of turbidityData.data; let i = index" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ (turbidityData.current_page - 1) * turbidityData.per_page + i + 1 }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.value }} NTU</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatTableDate(item.created_at) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Pagination -->
+              <div class="mt-4" *ngIf="turbidityData && turbidityData.last_page > 1">
+                <app-pagination 
+                  [currentPage]="turbidityData.current_page"
+                  [totalPages]="turbidityData.last_page"
+                  [totalItems]="turbidityData.total"
+                  [itemsPerPage]="turbidityData.per_page"
+                  (pageChange)="onTurbidityPageChange($event)">
+                </app-pagination>
+              </div>
+            </div>
+
+            <!-- No Data State -->
+            <div *ngIf="!turbidityLoading && (!turbidityData || turbidityData.data.length === 0)" class="text-center py-8">
+              <div class="text-4xl mb-2">🌫️</div>
+              <p class="text-gray-600">Tidak ada data kekeruhan ditemukan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Data State -->
+    <div class="text-center py-16" *ngIf="!exportStats && !statsLoading">
+      <div class="text-8xl mb-6">📊</div>
+      <h3 class="text-xl font-bold text-gray-900 mb-4">Tidak Ada Data Ekspor Tersedia</h3>
+      <p class="text-gray-600 text-lg">Tidak ada data sensor yang tersedia untuk ekspor saat ini.</p>
+    </div>
+  </div>
+</app-layout> 

@@ -1,0 +1,144 @@
+<!-- Use shared layout component -->
+<app-layout [user]="user$ | async" [loading]="false" [error]="''">
+  <!-- Hero Section -->
+  <section class="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center pt-20">
+    <div class="container grid lg:grid-cols-2 gap-16 items-center">
+      <div class="hero-content">
+        <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight mb-8 text-gray-900">
+          Sistem Pemantauan <span class="gradient-text">Embun Green House</span>
+        </h1>
+        <p class="text-xl text-gray-600 mb-10 leading-relaxed">
+          Pantau kelembaban tanaman secara real-time dan jaga pertumbuhan tanaman dengan teknologi cerdas.
+        </p>
+        <div class="flex gap-6 flex-wrap">
+          <!-- Show different buttons based on authentication status -->
+          <ng-container *ngIf="user$ | async as user; else loginButton">
+            <button class="btn btn-primary btn-large" (click)="goToDashboard()">
+              <span>📊 Buka Dashboard</span>
+            </button>
+          </ng-container>
+          <ng-template #loginButton>
+            <button class="btn btn-primary btn-large" (click)="loginWithGoogle()">
+              <span>🔐 Masuk dengan Google</span>
+            </button>
+          </ng-template>
+          <button class="btn btn-secondary btn-large" (click)="scrollToFeatures()">
+            <span>✨ Pelajari Lebih Lanjut</span>
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-6 grid-rows-2">
+        <div class="feature-card">
+          <div class="feature-icon">🌡️</div>
+          <h3 class="feature-title">Sensor Suhu</h3>
+          <p class="feature-description">Pemantauan suhu real-time</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💧</div>
+          <h3 class="feature-title">Kelembaban Tanah</h3>
+          <p class="feature-description">Monitoring kelembaban tanah</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💡</div>
+          <h3 class="feature-title">Intensitas Cahaya</h3>
+          <p class="feature-description">Pengukuran intensitas cahaya</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌫️</div>
+          <h3 class="feature-title">Kekeruhan Air</h3>
+          <p class="feature-description">Pengukuran kekeruhan air</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+<!-- About Section -->
+<section id="about" class="py-32 bg-gray-50">
+  <div class="container">
+    <div class="grid lg:grid-cols-2 gap-20 items-center">
+      <div class="about-text">
+        <h2 class="text-4xl lg:text-5xl font-bold mb-8 text-gray-900">Tentang Nestle Kebun Raya</h2>
+        <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+          Nestle Kebun Raya adalah platform canggih yang didedikasikan untuk memajukan penelitian 
+          dan konservasi lingkungan. Misi kami adalah menghubungkan para peneliti untuk 
+          berkolaborasi dalam inisiatif pertanian berkelanjutan.
+        </p>
+        <p class="text-lg text-gray-600 mb-10 leading-relaxed">
+          Dengan teknologi mutakhir dan komitmen terhadap pelestarian lingkungan, 
+          kami membangun masa depan di mana alam dan teknologi bekerja bersama secara harmonis.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="feature-card">
+          <div class="feature-icon">🌱</div>
+          <h4 class="feature-title">Keunggulan Penelitian</h4>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <h4 class="feature-title">Dampak Luas</h4>
+        </div>
+        <div class="feature-card col-span-2">
+          <div class="feature-icon">🔬</div>
+          <h4 class="feature-title">Inovasi</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-32 bg-gradient-to-r from-primary-500 to-primary-600">
+  <div class="container text-center">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-4xl lg:text-5xl font-bold mb-8 text-white">Siap Memulai Perjalanan Penelitian Anda?</h2>
+      <p class="text-xl text-white/90 mb-10 leading-relaxed">Bergabunglah dengan ribuan peneliti yang membuat perbedaan</p>
+      <!-- Show different buttons based on authentication status -->
+      <ng-container *ngIf="user$ | async as user; else ctaLoginButton">
+        <button class="btn btn-xl bg-white text-primary-600 hover:bg-gray-50 hover:-translate-y-1 shadow-primary" (click)="goToDashboard()">
+          <span>📊 Buka Dashboard</span>
+        </button>
+      </ng-container>
+      <ng-template #ctaLoginButton>
+        <button class="btn btn-xl bg-white text-primary-600 hover:bg-gray-50 hover:-translate-y-1 shadow-primary" (click)="loginWithGoogle()">
+          <span>🔐 Masuk dengan Google</span>
+        </button>
+      </ng-template>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white py-20">
+  <div class="container">
+    <div class="grid md:grid-cols-3 gap-12 mb-12">
+      <div class="footer-section">
+        <h3 class="text-2xl font-bold mb-6 gradient-text">🌿 Nestle Kebun Raya</h3>
+        <p class="text-gray-300 leading-relaxed">Memajukan penelitian dan konservasi lingkungan melalui teknologi.</p>
+      </div>
+      <div class="footer-section">
+        <h4 class="text-lg font-semibold mb-6">Tautan Cepat</h4>
+        <div class="space-y-3">
+          <a href="#features" class="block text-gray-300 hover:text-white transition-colors">Fitur</a>
+          <a href="#about" class="block text-gray-300 hover:text-white transition-colors">Tentang</a>
+          <a (click)="goToContact()" class="block text-gray-300 hover:text-white transition-colors cursor-pointer">Kontak</a>
+          <ng-container *ngIf="user$ | async as user; else footerLoginLink">
+            <a (click)="goToDashboard()" class="block text-gray-300 hover:text-white transition-colors cursor-pointer">Dashboard</a>
+          </ng-container>
+          <ng-template #footerLoginLink>
+            <a (click)="loginWithGoogle()" class="block text-gray-300 hover:text-white transition-colors cursor-pointer">Masuk</a>
+          </ng-template>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h4 class="text-lg font-semibold mb-6">Kontak</h4>
+        <p class="text-gray-300 mb-3">Email: info</p>
+        <p class="text-gray-300">Telepon: +62 812-3456-7890</p>
+      </div>
+    </div>
+    <div class="border-t border-gray-800 pt-8 text-center">
+      <p class="text-gray-400">&copy; 2024 Nestle Kebun Raya. Semua hak dilindungi.</p>
+    </div>
+  </div>
+</footer>
+</app-layout>

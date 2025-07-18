@@ -1,0 +1,140 @@
+<!-- Loading State -->
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100" *ngIf="loading">
+  <div class="text-center">
+    <div class="spinner mx-auto mb-6"></div>
+    <p class="text-gray-600 text-lg">Memuat...</p>
+  </div>
+</div>
+
+<!-- Error State -->
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100" *ngIf="error && !loading">
+  <div class="text-center max-w-md mx-auto">
+    <h3 class="text-2xl font-bold text-gray-800 mb-4">⚠️ Kesalahan</h3>
+    <p class="text-gray-600 mb-8">{{ error }}</p>
+    <button class="btn btn-primary" (click)="logout()">Coba Lagi</button>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100" *ngIf="!loading && !error">
+  <!-- Navbar -->
+  <nav class="fixed top-0 left-0 right-0 glass-effect border-b border-gray-200/50 z-50 py-4" (document:click)="closeUserMenu()">
+    <div class="container flex justify-between items-center">
+      <div class="cursor-pointer flex items-center" (click)="navigateToDashboard()">
+        <div class="nav-logo"></div>
+        <h2 class="text-2xl font-bold gradient-text ml-2">Nestle Kebun Raya Itera</h2>
+      </div>
+      
+      <!-- Authenticated User Navigation -->
+      <div class="flex items-center gap-4" *ngIf="user">
+        <div class="relative cursor-pointer group" (click)="showAlerts()">
+          <div class="user-avatar bg-warning-100 text-warning-600 hover:scale-110 transition-transform">
+            <span class="text-xl">⚠️</span>
+          </div>
+        </div>
+        <ng-container *ngIf="user.role == 'ADMIN' || user.role == 'PENGELOLA' || user.role == 'PENELITI'">
+          <div class="relative cursor-pointer group" (click)="exportToExcel()">
+            <div class="user-avatar bg-primary-100 text-primary-600 hover:scale-110 transition-transform">
+              <span class="text-xl">📊</span>
+            </div>
+          </div>
+        </ng-container>
+        <div class="relative" (click)="$event.stopPropagation(); toggleUserMenu()">
+          <div class="user-avatar cursor-pointer overflow-hidden hover:scale-110 transition-transform">
+            <img [src]="user.avatar || 'assets/default-avatar.png'" [alt]="user.name" *ngIf="user.avatar" class="w-full h-full object-cover">
+            <div class="w-full h-full bg-gradient-to-r from-primary-500 to-primary-600 text-white flex items-center justify-center font-bold text-lg" *ngIf="!user.avatar">
+              {{ user.name.charAt(0).toUpperCase() }}
+            </div>
+          </div>
+          
+          <!-- User Dropdown Menu -->
+          <div class="absolute right-0 top-16 w-80 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden" *ngIf="showUserDropdown">
+            <div class="p-6 bg-gradient-to-r from-primary-50 to-primary-100">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                  <img [src]="user.avatar || 'assets/default-avatar.png'" [alt]="user.name" *ngIf="user.avatar" class="w-full h-full object-cover rounded-full">
+                  <div class="w-full h-full bg-gradient-to-r from-primary-500 to-primary-600 text-white flex items-center justify-center font-bold rounded-full" *ngIf="!user.avatar">
+                    {{ user.name.charAt(0).toUpperCase() }}
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="font-semibold text-gray-900 truncate">{{ user.name }}</h4>
+                  <p class="text-sm text-gray-600 truncate">{{ user.email }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="py-2">
+              <div class="px-6 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors" (click)="navigateToLanding()">
+                <span class="text-lg">🏠</span>
+                <span class="text-gray-700 font-medium">Beranda</span>
+              </div>
+              <!-- Dashboard -->
+              <div class="px-6 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors" (click)="navigateToDashboard()">
+                <span class="text-lg">🏠</span>
+                <span class="text-gray-700 font-medium">Dashboard</span>
+              </div>
+              <!-- Manage Account -->
+              <ng-container *ngIf="user.role == 'ADMIN' || user.role == 'PENGELOLA'">
+                <div class="px-6 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors" (click)="navigateToManageAccount()">
+                  <span class="text-lg">👤</span>
+                  <span class="text-gray-700 font-medium">Kelola Akun</span>
+                </div>
+              </ng-container>
+              <div class="px-6 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors" (click)="logout()">
+                <span class="text-lg">🚪</span>
+                <span class="text-gray-700 font-medium">Keluar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Guest Navigation -->
+      <div class="hidden md:flex items-center gap-8" *ngIf="!user">
+        <a href="#features" class="nav-link">Fitur</a>
+        <a href="#about" class="nav-link">Tentang</a>
+        <div (click)="goToContact()" class="nav-link cursor-pointer">Kontak</div>
+        <button class="btn btn-primary" (click)="loginWithGoogle()">Masuk dengan Google</button>
+      </div>
+      
+      <!-- Mobile menu button for guests -->
+      <button class="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors" *ngIf="!user" (click)="toggleMobileMenu()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Mobile menu for guests -->
+    <div class="md:hidden bg-white border-t border-gray-200 shadow-lg" *ngIf="!user && mobileMenuOpen">
+      <div class="container py-4 space-y-4">
+        <a href="#features" class="block nav-link py-2">Fitur</a>
+        <a href="#about" class="block nav-link py-2">Tentang</a>
+        <div (click)="goToContact()" class="nav-link cursor-pointer">Kontak</div>
+        <button class="btn btn-primary w-full" (click)="loginWithGoogle()">Masuk dengan Google</button>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Content Area -->
+  <div class="pt-24">
+    <div class="">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div> 
+
+<!-- Alert Modal -->
+<div *ngIf="showAlertModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
+
+    <button (click)="closeAlertModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+    <h3 class="text-xl font-bold mb-4 flex items-center gap-2" 
+    [class.text-red-700]="alert?.type == 'Danger'"
+    [class.text-green-700]="alert?.type == 'Success'"
+    >{{ alert?.type }}</h3>
+    <ul class="mb-6 space-y-2">
+      <li>{{ alert?.description }}</li>
+    </ul>
+  </div>
+</div> 
