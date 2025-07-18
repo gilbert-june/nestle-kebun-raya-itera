@@ -43,11 +43,11 @@ class AuthController extends Controller
             $token = $user->createToken('google-auth-token')->plainTextToken;
 
             // Redirect to Angular frontend oauth-callback with token (URL-encoded)
-            return redirect()->away('http://localhost:4200/oauth-callback?token=' . urlencode($token));
+            return redirect()->away(env('FRONTEND_URL') . '/oauth-callback?token=' . urlencode($token));
 
         } catch (\Exception $e) {
             // Redirect to login page with error
-            return redirect()->away('http://localhost:4200/login?error=' . urlencode($e->getMessage()));
+            return redirect()->away(env('FRONTEND_URL') . '/login?error=' . urlencode($e->getMessage()));
         }
     }
 
