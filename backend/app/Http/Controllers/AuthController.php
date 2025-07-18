@@ -44,7 +44,6 @@ class AuthController extends Controller
 
             // Redirect to Angular frontend oauth-callback with token (URL-encoded)
             return redirect()->away(env('FRONTEND_URL') . '/oauth-callback?token=' . urlencode($token));
-
         } catch (\Exception $e) {
             // Redirect to login page with error
             return redirect()->away(env('FRONTEND_URL') . '/login?error=' . urlencode($e->getMessage()));
