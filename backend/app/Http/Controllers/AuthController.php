@@ -28,8 +28,9 @@ class AuthController extends Controller
             $googleUser = Socialite::driver('google')->user();
 
             $user = User::updateOrCreate([
-                'google_id' => $googleUser->id,
+                'email' => $googleUser->email,
             ], [
+                'google_id' => $googleUser->id,
                 'name' => $googleUser->name,
                 'email' => $googleUser->email,
                 'avatar' => $googleUser->avatar,
