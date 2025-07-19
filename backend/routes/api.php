@@ -89,9 +89,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/export/turbidity-sensors', [ExportController::class, 'exportTurbiditySensors']);
     Route::get('/export/all-sensors', [ExportController::class, 'exportAllSensors']);
     
-    // Paginated data routes
-    Route::get('/export/temperature-sensors-data', [ExportController::class, 'getTemperatureSensorsData']);
-    Route::get('/export/soil-moisture-sensors-data', [ExportController::class, 'getSoilMoistureSensorsData']);
-    Route::get('/export/light-sensors-data', [ExportController::class, 'getLightSensorsData']);
-    Route::get('/export/turbidity-sensors-data', [ExportController::class, 'getTurbiditySensorsData']);
 }); 
+// Paginated data routes
+Route::get('/export/temperature-sensors-data', [ExportController::class, 'getTemperatureSensorsData']);
+Route::get('/export/soil-moisture-sensors-data', [ExportController::class, 'getSoilMoistureSensorsData']);
+Route::get('/export/light-sensors-data', [ExportController::class, 'getLightSensorsData']);
+Route::get('/export/turbidity-sensors-data', [ExportController::class, 'getTurbiditySensorsData']);

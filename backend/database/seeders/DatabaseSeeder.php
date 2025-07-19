@@ -17,22 +17,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $faker = Faker::create();
-        // $password = Hash::make('password');
-
-        // for ($i = 0; $i < 10; $i++) {
-        //     User::factory()->create([
-        //         'name' => $faker->name,
-        //         'email' => $faker->unique()->safeEmail,
-        //         'password' => $password,
-        //     ]);
-        // }
-        
-        // User::factory()->create([
-            //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
         $system = System::first();
         if(!$system) {
             System::create([
@@ -51,12 +35,8 @@ class DatabaseSeeder extends Seeder
         }
         
 
-        // Seed sensor data
+        // Seed other data
         $this->call([
-            TemperatureSensorSeeder::class,
-            SoilMoistureSensorSeeder::class,
-            LightSensorSeeder::class,
-            TurbiditySensorSeeder::class,
             RoleSeeder::class,
             AboutSeeder::class,
         ]);
