@@ -8,6 +8,16 @@ use Carbon\Carbon;
 
 class SoilMoistureSensorSeeder extends Seeder
 {
+    private $month = null;
+
+    /**
+     * Set the month for data generation
+     */
+    public function setMonth($month): void
+    {
+        $this->month = $month;
+    }
+
     /**
      * Run the database seeds.
      */
@@ -15,17 +25,27 @@ class SoilMoistureSensorSeeder extends Seeder
     {
         $sensorNames = ['Sensor Kelembaban Tanah 1'];
         
-        // Set end time as now, and start time as 24 hours ago
-        $endTime = Carbon::now();
-        $startTime = $endTime->copy()->subHours(24);
+        // Get month from setMonth method or default to current month
+        $month = $this->month ?? Carbon::now()->month;
+        $year = Carbon::now()->year;
+        
+        // Set start and end time for the specified month
+        $startTime = Carbon::create($year, $month, 1, 0, 0, 0);
+        $endTime = $startTime->copy()->endOfMonth();
         $intervalSeconds = 30; // 2 data per minute
-        $totalData = (24 * 60 * 60) / $intervalSeconds; // 24 hours worth of data, every 30 seconds
+        $totalData = ($endTime->diffInSeconds($startTime)) / $intervalSeconds;
 
         foreach ($sensorNames as $sensorName) {
             $currentTime = $startTime->copy();
             for ($i = 0; $i < $totalData; $i++) {
-                // Generate realistic soil moisture values (0-100%)
-                $baseMoisture = mt_rand(30, 70); // Base moisture level
+                $hour = $currentTime->hour;
+                $dayOfYear = $currentTime->dayOfYear;
+                
+                // Generate realistic soil moisture values with seasonal variation
+                $seasonalMoisture = $this->getSeasonalMoisture($month, $dayOfYear);
+                $hourlyVariation = $this->getHourlyMoistureVariation($hour);
+                $baseMoisture = $seasonalMoisture + $hourlyVariation;
+                
                 $variation = rand(-10, 10);
                 $moisture = $baseMoisture + $variation + (sin($i * 0.3) * 5); // Add some sine wave variation
                 $value = max(0, min(100, $moisture)); // Ensure value is between 0-100
@@ -42,6 +62,47 @@ class SoilMoistureSensorSeeder extends Seeder
                     break;
                 }
             }
+        }
+    }
+    
+    /**
+     * Get seasonal soil moisture based on month and day of year
+     */
+    private function getSeasonalMoisture($month, $dayOfYear): float
+    {
+        // Indonesia has wet and dry seasons affecting soil moisture
+        
+        // Base moisture level
+        $baseMoisture = 50;
+        
+        // Seasonal variation
+        $seasonalVariation = 0;
+        
+        // Higher moisture in rainy season (November-March)
+        if ($month >= 11 || $month <= 3) {
+            $seasonalVariation = 15;
+        } else {
+            // Lower moisture in dry season (April-October)
+            $seasonalVariation = -10;
+        }
+        
+        // Add some daily variation
+        $dailyVariation = 5 * sin(2 * pi() * $dayOfYear / 365);
+        
+        return $baseMoisture + $seasonalVariation + $dailyVariation;
+    }
+    
+    /**
+     * Get hourly moisture variation
+     */
+    private function getHourlyMoistureVariation($hour): float
+    {
+        // Moisture can vary throughout the day
+        // Slightly higher in early morning due to dew
+        if ($hour >= 5 && $hour <= 8) {
+            return rand(2, 5);
+        } else {
+            return rand(-2, 2);
         }
     }
 } 

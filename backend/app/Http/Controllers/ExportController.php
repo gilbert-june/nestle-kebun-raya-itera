@@ -7,9 +7,11 @@ use App\Exports\SoilMoistureSensorsExport;
 use App\Exports\LightSensorsExport;
 use App\Exports\TurbiditySensorsExport;
 use App\Exports\AllSensorsExport;
+use App\Models\SensorHistoryExcelFile;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class ExportController extends Controller
 {
@@ -283,6 +285,101 @@ class ExportController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch turbidity sensors data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get paginated exported files data
+     */
+    public function getExportedFiles(Request $request): JsonResponse
+    {
+        try {
+            $perPage = $request->get('per_page', 15);
+            $page = $request->get('page', 1);
+            $sensorName = $request->get('sensor_name');
+            $date = $request->get('date');
+
+            $query = SensorHistoryExcelFile::query();
+
+            if ($sensorName) {
+                $query->where('sensor_name', 'like', '%' . $sensorName . '%');
+            }
+
+            if ($date) {
+                $query->where('date', $date);
+            }
+
+            $data = $query->orderBy('created_at', 'desc')
+                         ->paginate($perPage, ['*'], 'page', $page);
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch exported files data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Download exported file
+     */
+    public function downloadExportedFile($id)
+    {
+        try {
+            $file = SensorHistoryExcelFile::findOrFail($id);
+
+            if (!Storage::exists($file->file_path)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File not found'
+                ], 404);
+            }
+
+            // Increment download count
+            $file->increment('download_count');
+
+            return Storage::download($file->file_path);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to download file',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete exported file
+     */
+    public function deleteExportedFile($id): JsonResponse
+    {
+        try {
+            $file = SensorHistoryExcelFile::findOrFail($id);
+
+            if (Storage::exists($file->file_path)) {
+                Storage::delete($file->file_path);
+            }
+
+            $file->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'File deleted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete file',
                 'error' => $e->getMessage()
             ], 500);
         }

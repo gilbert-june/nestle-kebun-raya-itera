@@ -48,6 +48,35 @@ interface FilterOptions {
   end_date: string;
 }
 
+interface ExportedFile {
+  id: number;
+  sensor_name: string;
+  file_path: string;
+  date: string;
+  file_size: string;
+  download_count: number;
+  created_at: string;
+  updated_at: string;
+  formatted_date: string;
+  download_url: string;
+}
+
+interface ExportedFilesData {
+  current_page: number;
+  data: ExportedFile[];
+  first_page_url: string;
+  from: number;
+  last_page: number;
+  last_page_url: string;
+  links: any[];
+  next_page_url: string | null;
+  path: string;
+  per_page: number;
+  prev_page_url: string | null;
+  to: number;
+  total: number;
+}
+
 @Component({
   selector: 'app-export',
   standalone: true,
@@ -67,12 +96,14 @@ export class ExportComponent implements OnInit {
   soilMoistureData: PaginatedData | null = null;
   lightData: PaginatedData | null = null;
   turbidityData: PaginatedData | null = null;
+  exportedFilesData: ExportedFilesData | null = null;
 
   // Loading states for tables
   temperatureLoading = false;
   soilMoistureLoading = false;
   lightLoading = false;
   turbidityLoading = false;
+  exportedFilesLoading = false;
 
   // Filter options
   temperatureFilters: FilterOptions = {
@@ -100,6 +131,12 @@ export class ExportComponent implements OnInit {
     end_date: ''
   };
 
+  // Exported files filters
+  exportedFilesFilters = {
+    sensor_name: '',
+    date: ''
+  };
+
   constructor(
     private authService: AuthService,
     private router: Router
@@ -109,6 +146,7 @@ export class ExportComponent implements OnInit {
     this.loadUser();
     this.loadExportStats();
     this.loadAllTables();
+    this.loadExportedFiles();
   }
 
   loadUser(): void {
@@ -203,6 +241,27 @@ export class ExportComponent implements OnInit {
     this.loadSoilMoistureData();
     this.loadLightData();
     this.loadTurbidityData();
+  }
+
+  loadExportedFiles(page: number = 1): void {
+    this.exportedFilesLoading = true;
+    const params = this.buildExportedFilesQueryParams(page);
+    
+    this.authService.getWithAuth(`/api/export/files?${params}`).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.exportedFilesData = response.data;
+        } else {
+          this.error = response.message || 'Failed to load exported files';
+        }
+        this.exportedFilesLoading = false;
+      },
+      error: (error: any) => {
+        this.error = 'Failed to load exported files';
+        this.exportedFilesLoading = false;
+        console.error('Error loading exported files:', error);
+      }
+    });
   }
 
   // Load data methods
@@ -385,5 +444,73 @@ export class ExportComponent implements OnInit {
     const seconds = date.getSeconds().toString().padStart(2, '0');
     
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  }
+
+  // Exported files methods
+  downloadExportedFile(fileId: number): void {
+    this.authService.getWithAuth(`/api/export/files/${fileId}/download`, { responseType: 'blob' }).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `exported_file_${fileId}.xlsx`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        // Reload the files list to update download count
+        this.loadExportedFiles(this.exportedFilesData?.current_page || 1);
+      },
+      error: (error: any) => {
+        console.error('Error downloading file:', error);
+        this.error = 'Failed to download file';
+      }
+    });
+  }
+
+  deleteExportedFile(fileId: number): void {
+    if (confirm('Are you sure you want to delete this file?')) {
+      this.authService.deleteWithAuth(`/api/export/files/${fileId}`).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.loadExportedFiles(this.exportedFilesData?.current_page || 1);
+          } else {
+            this.error = response.message || 'Failed to delete file';
+          }
+        },
+        error: (error: any) => {
+          console.error('Error deleting file:', error);
+          this.error = 'Failed to delete file';
+        }
+      });
+    }
+  }
+
+  applyExportedFilesFilters(): void {
+    this.loadExportedFiles(1);
+  }
+
+  clearExportedFilesFilters(): void {
+    this.exportedFilesFilters = {
+      sensor_name: '',
+      date: ''
+    };
+    this.loadExportedFiles(1);
+  }
+
+  onExportedFilesPageChange(page: number): void {
+    this.loadExportedFiles(page);
+  }
+
+  private buildExportedFilesQueryParams(page: number): string {
+    const params = new URLSearchParams();
+    
+    if (this.exportedFilesFilters.sensor_name) params.append('sensor_name', this.exportedFilesFilters.sensor_name);
+    if (this.exportedFilesFilters.date) params.append('date', this.exportedFilesFilters.date);
+    params.append('per_page', '10');
+    if (page > 1) params.append('page', page.toString());
+    
+    return params.toString();
   }
 } 
