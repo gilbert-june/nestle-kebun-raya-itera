@@ -1,0 +1,29 @@
+RewriteEngine On
+RewriteBase /
+
+# Set proper MIME types for JavaScript modules (FIXES THE MAIN ISSUE)
+<FilesMatch "\.js$">
+    Header set Content-Type "application/javascript"
+</FilesMatch>
+
+# Set proper MIME types for CSS
+<FilesMatch "\.css$">
+    Header set Content-Type "text/css"
+</FilesMatch>
+
+# Enable CORS for API requests
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+
+# Handle preflight requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# Jika request file/folder langsung, jangan redirect
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Redirect semua ke index.html di folder Angular
+RewriteRule ^(.*)$ nestle-kebun-raya-itera/frontend/dist/frontend/browser/index.html [L] 
