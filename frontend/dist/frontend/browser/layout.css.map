@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/shared/layout/layout.css"],
-  "sourcesContent": ["/* Custom styles for layout component */\n/* All styling is handled by Tailwind CSS directives */ \n\n.nav-logo {\n    background: url('../../assets/logo.png') no-repeat center center;\n    background-size: contain;\n    width: 50px;\n    height: 50px;\n}"],
-  "mappings": ";AAGA,CAAC;AACG,cAAY,wBAA6B,UAAU,OAAO;AAC1D,mBAAiB;AACjB,SAAO;AACP,UAAQ;AACZ;",
-  "names": []
-}

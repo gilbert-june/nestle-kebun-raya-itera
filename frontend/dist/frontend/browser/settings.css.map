@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/settings/settings.css"],
-  "sourcesContent": ["/* Settings Component Styles */\n\n.gradient-text {\n  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n  background-clip: text;\n}\n\n/* Form focus states */\ninput:focus, textarea:focus {\n  outline: none;\n  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);\n}\n\n/* Preview section styling */\n.about-image img {\n  transition: transform 0.3s ease;\n}\n\n.about-image img:hover {\n  transform: scale(1.02);\n}\n\n/* Responsive adjustments */\n@media (max-width: 768px) {\n  .container {\n    padding-left: 1rem;\n    padding-right: 1rem;\n  }\n} "],
-  "mappings": ";AAEA,CAAC;AACC;AAAA,IAAY;AAAA,MAAgB,MAAhB;AAAA,MAAwB,QAAQ,EAAhC;AAAA,MAAoC,QAAQ;AACxD,2BAAyB;AACzB,2BAAyB;AACzB,mBAAiB;AACnB;AAGA,KAAK;AAAQ,QAAQ;AACnB,WAAS;AACT,cAAY,EAAE,EAAE,EAAE,IAAI,KAAK,GAAG,EAAE,GAAG,EAAE,GAAG,EAAE;AAC5C;AAGA,CAAC,YAAY;AACX,cAAY,UAAU,KAAK;AAC7B;AAEA,CAJC,YAIY,GAAG;AACd,aAAW,MAAM;AACnB;AAGA,OAAO,CAAC,SAAS,EAAE;AACjB,GAAC;AACC,kBAAc;AACd,mBAAe;AACjB;AACF;",
-  "names": []
-}
