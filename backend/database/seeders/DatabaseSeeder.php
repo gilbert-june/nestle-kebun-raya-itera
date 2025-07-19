@@ -58,6 +58,8 @@ class DatabaseSeeder extends Seeder
             LightSensorSeeder::class,
             TurbiditySensorSeeder::class,
             RoleSeeder::class,
+            AboutSeeder::class,
+            PlantTypeSeeder::class,
         ]);
     }
 }

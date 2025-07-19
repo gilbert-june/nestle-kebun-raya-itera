@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/dashboard/dashboard.css"],
+  "sourcesContent": ["/* Dashboard component styles - now using Tailwind CSS */\n\n/* Toggle Switch Styles */\n.toggle-switch-button {\n  position: relative;\n  display: inline-block;\n  width: 60px;\n  height: 34px;\n  border-radius: 34px;\n  transition: background-color 0.3s;\n  cursor: pointer;\n  outline: none;\n  border: none;\n}\n\n.toggle-switch-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n\n.toggle-switch-slider {\n  position: absolute;\n  top: 4px;\n  left: 4px;\n  width: 26px;\n  height: 26px;\n  background-color: white;\n  border-radius: 50%;\n  transition: transform 0.3s;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);\n}\n\n/* Status Dot Styles */\n.status-dot {\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n}\n\n.status-online {\n  background-color: #22c55e; /* Green */\n  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);\n}\n\n.status-offline {\n  background-color: #9ca3af; /* Gray */\n}\n"],
+  "mappings": ";AAGA,CAAC;AACC,YAAU;AACV,WAAS;AACT,SAAO;AACP,UAAQ;AACR,iBAAe;AACf,cAAY,iBAAiB;AAC7B,UAAQ;AACR,WAAS;AACT,UAAQ;AACV;AAEA,CAZC,oBAYoB;AACnB,WAAS;AACT,UAAQ;AACV;AAEA,CAAC;AACC,YAAU;AACV,OAAK;AACL,QAAM;AACN,SAAO;AACP,UAAQ;AACR,oBAAkB;AAClB,iBAAe;AACf,cAAY,UAAU;AACtB,cAAY,EAAE,IAAI,IAAI,KAAK,CAAC,EAAE,CAAC,EAAE,CAAC,EAAE;AACtC;AAGA,CAAC;AACC,SAAO;AACP,UAAQ;AACR,iBAAe;AACjB;AAEA,CAAC;AACC,oBAAkB;AAClB,cAAY,EAAE,EAAE,IAAI,KAAK,EAAE,EAAE,GAAG,EAAE,EAAE,EAAE;AACxC;AAEA,CAAC;AACC,oBAAkB;AACpB;",
+  "names": []
+}

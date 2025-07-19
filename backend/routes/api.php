@@ -11,6 +11,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\PlantTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +60,19 @@ Route::post('/alert/update-alert', [AlertController::class, 'updateAlert']);
 
 Route::get('/system', [SystemController::class, 'index']);
 Route::put('/system/{id}/toggle-access', [SystemController::class, 'toggleActivate']);
+
+// About routes
+Route::get('/about', [AboutController::class, 'index']);
+Route::put('/about', [AboutController::class, 'update']);
+
+// Plant Type routes
+Route::get('/plant-types', [PlantTypeController::class, 'index']);
+Route::post('/plant-types', [PlantTypeController::class, 'store']);
+Route::get('/plant-types/{id}', [PlantTypeController::class, 'show']);
+Route::put('/plant-types/{id}', [PlantTypeController::class, 'update']);
+Route::delete('/plant-types/{id}', [PlantTypeController::class, 'destroy']);
+Route::put('/plant-types/{id}/images', [PlantTypeController::class, 'updateImages']);
+Route::put('/plant-types/{id}/images/partial', [PlantTypeController::class, 'updateImagesPartial']);
 
 // User Management routes
 Route::middleware('auth:sanctum')->group(function () {

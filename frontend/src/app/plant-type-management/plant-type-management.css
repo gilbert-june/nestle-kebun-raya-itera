@@ -1,0 +1,121 @@
+/* Plant Type Management Styles */
+
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-primary {
+  @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500;
+}
+
+.btn-sm {
+  @apply px-3 py-1.5 text-sm;
+}
+
+.spinner {
+  @apply w-5 h-5 border-2 border-gray-300 border-t-primary-600 rounded-full animate-spin;
+}
+
+/* File upload area hover effects */
+.file-upload-area:hover {
+  @apply border-primary-400 bg-primary-50;
+}
+
+/* Image preview hover effects */
+.image-preview:hover .image-overlay {
+  @apply opacity-100;
+}
+
+.image-overlay {
+  @apply absolute inset-0 bg-black bg-opacity-0 transition-all duration-200;
+}
+
+/* Thumbnail indicator */
+.thumbnail-indicator {
+  @apply absolute -top-1 -right-1 bg-primary-500 text-white text-xs px-1 rounded-full;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 640px) {
+  .image-grid {
+    @apply grid-cols-2;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .image-grid {
+    @apply grid-cols-3;
+  }
+}
+
+@media (min-width: 1025px) {
+  .image-grid {
+    @apply grid-cols-4;
+  }
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Custom scrollbar for image gallery */
+.image-gallery::-webkit-scrollbar {
+  height: 6px;
+}
+
+.image-gallery::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+.image-gallery::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400;
+}
+
+/* Loading state animations */
+.loading-pulse {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Form validation styles */
+.form-error {
+  @apply border-red-300 focus:border-red-500 focus:ring-red-500;
+}
+
+.form-success {
+  @apply border-green-300 focus:border-green-500 focus:ring-green-500;
+}
+
+/* Card hover effects */
+.plant-type-card {
+  @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Button disabled state */
+.btn:disabled {
+  @apply opacity-50 cursor-not-allowed transform-none;
+}
+
+/* Image aspect ratio container */
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+/* Responsive text sizing */
+@media (max-width: 640px) {
+  .responsive-text {
+    @apply text-sm;
+  }
+}
+
+@media (min-width: 641px) {
+  .responsive-text {
+    @apply text-base;
+  }
+} 

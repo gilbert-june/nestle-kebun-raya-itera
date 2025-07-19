@@ -116,6 +116,16 @@ export class LayoutComponent implements OnInit {
     this.closeUserMenu();
   }
 
+  navigateToSettings(): void {
+    this.router.navigate(['/settings']);
+    this.closeUserMenu();
+  }
+
+  navigateToPlantTypes(): void {
+    this.router.navigate(['/plant-types']);
+    this.closeUserMenu();
+  }
+
   goToContact(): void {
     this.router.navigate(['/contact']);
   }

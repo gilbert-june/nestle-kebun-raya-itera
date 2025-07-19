@@ -242,8 +242,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-
-
   // Chart configuration methods for individual sensors
   getChartSeries(sensor: SensorData): any[] {
     return [{
