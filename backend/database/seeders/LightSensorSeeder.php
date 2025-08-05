@@ -32,8 +32,8 @@ class LightSensorSeeder extends Seeder
         // Set start and end time for the specified month
         $startTime = Carbon::create($year, $month, 1, 0, 0, 0);
         $endTime = $startTime->copy()->endOfMonth();
-        $intervalSeconds = 30; // 2 data per minute
-        $totalData = ($endTime->diffInSeconds($startTime)) / $intervalSeconds;
+        $intervalSeconds = 120; // 1 data per 2 minutes
+        $totalData = ($startTime->diffInSeconds($endTime)) / $intervalSeconds;
 
         foreach ($sensorNames as $sensorName) {
             $currentTime = $startTime->copy();

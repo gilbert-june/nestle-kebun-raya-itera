@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\TemperatureSensor;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class TemperatureSensorSeeder extends Seeder
 {
@@ -33,35 +34,46 @@ class TemperatureSensorSeeder extends Seeder
         // Set start and end time for the specified month
         $startTime = Carbon::create($year, $month, 1, 0, 0, 0);
         $endTime = $startTime->copy()->endOfMonth();
-        $intervalSeconds = 30; // 2 data per minute
-        $totalData = ($endTime->diffInSeconds($startTime)) / $intervalSeconds;
+        $intervalSeconds = 120; // 1 data per 2 minutes
+        $totalData = ($startTime->diffInSeconds($endTime)) / $intervalSeconds;
 
         foreach ($sensorNames as $sensorName) {
             $currentTime = $startTime->copy();
+            $insertedCount = 0;
+            
             for ($i = 0; $i < $totalData; $i++) {
-                $hour = $currentTime->hour;
-                $dayOfYear = $currentTime->dayOfYear;
-                
-                // Generate realistic temperature values with seasonal variation
-                $seasonalTemp = $this->getSeasonalTemperature($month, $dayOfYear);
-                $hourlyVariation = $this->getHourlyTemperatureVariation($hour);
-                $baseTemp = $seasonalTemp + $hourlyVariation;
-                
-                $variation = rand(-3, 3);
-                $temperature = $baseTemp + $variation + (sin($i * 0.5) * 2); // Add some sine wave variation
+                try {
+                    $hour = $currentTime->hour;
+                    $dayOfYear = $currentTime->dayOfYear;
+                    
+                    // Generate realistic temperature values with seasonal variation
+                    $seasonalTemp = $this->getSeasonalTemperature($month, $dayOfYear);
+                    $hourlyVariation = $this->getHourlyTemperatureVariation($hour);
+                    $baseTemp = $seasonalTemp + $hourlyVariation;
+                    
+                    $variation = rand(-3, 3);
+                    $temperature = $baseTemp + $variation + (sin($i * 0.5) * 2); // Add some sine wave variation
 
-                TemperatureSensor::create([
-                    'name' => $sensorName,
-                    'value' => round($temperature, 2),
-                    'created_at' => $currentTime,
-                    'updated_at' => $currentTime
-                ]);
+                    TemperatureSensor::create([
+                        'name' => $sensorName,
+                        'value' => round($temperature, 2),
+                        'created_at' => $currentTime,
+                        'updated_at' => $currentTime
+                    ]);
 
-                $currentTime->addSeconds($intervalSeconds);
-                if ($currentTime->greaterThan($endTime)) {
+                    $insertedCount++;
+
+                    $currentTime->addSeconds($intervalSeconds);
+                    if ($currentTime->greaterThan($endTime)) {
+                        break;
+                    }
+                } catch (\Exception $e) {
+                    echo "Error inserting record: " . $e->getMessage() . "\n";
+                    Log::error("TemperatureSensorSeeder error: " . $e->getMessage());
                     break;
                 }
             }
+            
         }
     }
     
