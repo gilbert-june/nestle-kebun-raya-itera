@@ -23,7 +23,7 @@ class TurbiditySensorSeeder extends Seeder
      */
     public function run(): void
     {
-        $sensorNames = ['Sensor Turbiditas 1'];
+        $sensorNames = ['Sensor Kekeruhan'];
         
         // Get month from setMonth method or default to current month
         $month = $this->month ?? Carbon::now()->month;

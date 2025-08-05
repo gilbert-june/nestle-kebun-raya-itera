@@ -96,7 +96,7 @@ class TurbiditySensorController extends Controller
                 'value' => 'required|numeric|min:0'
             ]);
 
-            $allowedNames = ['Sensor Turbiditas 1'];
+            $allowedNames = ['Sensor Kekeruhan'];
             if(!in_array($request->name, $allowedNames)) {
                 return response()->json([
                     'success' => false,

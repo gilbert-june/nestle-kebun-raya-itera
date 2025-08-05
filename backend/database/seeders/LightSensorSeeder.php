@@ -23,7 +23,7 @@ class LightSensorSeeder extends Seeder
      */
     public function run(): void
     {
-        $sensorNames = ['Sensor Cahaya 1'];
+        $sensorNames = ['Sensor Cahaya'];
         
         // Get month from setMonth method or default to current month
         $month = $this->month ?? Carbon::now()->month;

@@ -8,10 +8,10 @@ The sensor seeding system allows you to generate realistic sensor data for any m
 
 ## Available Sensors
 
-- **Temperature Sensor** (`Sensor Suhu 1`) - Temperature in Celsius
-- **Soil Moisture Sensor** (`Sensor Kelembaban Tanah 1`) - Moisture percentage (0-100%)
-- **Light Sensor** (`Sensor Cahaya 1`) - Light intensity in lux
-- **Turbidity Sensor** (`Sensor Turbiditas 1`) - Turbidity in NTU
+- **Temperature Sensor** (`Sensor Suhu`) - Temperature in Celsius
+- **Soil Moisture Sensor** (`Sensor Kelembaban Tanah`) - Moisture percentage (0-100%)
+- **Light Sensor** (`Sensor Cahaya`) - Light intensity in lux
+- **Turbidity Sensor** (`Sensor Kekeruhan`) - Turbidity in NTU
 
 ## Usage
 

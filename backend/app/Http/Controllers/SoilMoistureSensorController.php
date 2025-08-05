@@ -96,7 +96,7 @@ class SoilMoistureSensorController extends Controller
                 'value' => 'required|numeric|between:0,100'
             ]);
 
-            $allowedNames = ['Sensor Kelembaban Tanah 1'];
+            $allowedNames = ['Sensor Kelembaban Tanah'];
             if(!in_array($request->name, $allowedNames)) {
                 return response()->json([
                     'success' => false,

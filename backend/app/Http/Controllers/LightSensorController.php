@@ -96,7 +96,7 @@ class LightSensorController extends Controller
                 'value' => 'required|numeric|min:0'
             ]);
 
-            $allowedNames = ['Sensor Cahaya 1'];
+            $allowedNames = ['Sensor Cahaya'];
             if(!in_array($request->name, $allowedNames)) {
                 return response()->json([
                     'success' => false,

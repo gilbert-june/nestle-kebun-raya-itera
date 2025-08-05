@@ -96,7 +96,7 @@ class TemperatureSensorController extends Controller
                 'value' => 'required|numeric|between:-50,100'
             ]);
 
-            $allowedNames = ['Sensor Suhu 1'];
+            $allowedNames = ['Sensor Suhu'];
             if(!in_array($request->name, $allowedNames)) {
                 return response()->json([
                     'success' => false,

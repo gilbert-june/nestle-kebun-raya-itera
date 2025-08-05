@@ -24,7 +24,7 @@ class TemperatureSensorSeeder extends Seeder
      */
     public function run(): void
     {
-        $sensorNames = ['Sensor Suhu 1'];
+        $sensorNames = ['Sensor Suhu'];
         
         // Get month from setMonth method or default to current month
         $month = $this->month ?? Carbon::now()->month;
