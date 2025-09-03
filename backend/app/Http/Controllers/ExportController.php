@@ -20,8 +20,14 @@ class ExportController extends Controller
      */
     public function exportTemperatureSensors(Request $request)
     {
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+        $startDay = $request->get('start_day');
+        $endDay = $request->get('end_day');
+        
+        // Convert day to full date for current month/year
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $startDate = $startDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay) : null;
+        $endDate = $endDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay) : null;
         
         $filename = 'temperature_sensors_' . date('Y-m-d_H-i-s') . '.xlsx';
         return Excel::download(new TemperatureSensorsExport($startDate, $endDate), $filename);
@@ -32,8 +38,14 @@ class ExportController extends Controller
      */
     public function exportSoilMoistureSensors(Request $request)
     {
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+        $startDay = $request->get('start_day');
+        $endDay = $request->get('end_day');
+        
+        // Convert day to full date for current month/year
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $startDate = $startDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay) : null;
+        $endDate = $endDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay) : null;
         
         $filename = 'soil_moisture_sensors_' . date('Y-m-d_H-i-s') . '.xlsx';
         return Excel::download(new SoilMoistureSensorsExport($startDate, $endDate), $filename);
@@ -44,8 +56,14 @@ class ExportController extends Controller
      */
     public function exportLightSensors(Request $request)
     {
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+        $startDay = $request->get('start_day');
+        $endDay = $request->get('end_day');
+        
+        // Convert day to full date for current month/year
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $startDate = $startDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay) : null;
+        $endDate = $endDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay) : null;
         
         $filename = 'light_sensors_' . date('Y-m-d_H-i-s') . '.xlsx';
         return Excel::download(new LightSensorsExport($startDate, $endDate), $filename);
@@ -56,8 +74,14 @@ class ExportController extends Controller
      */
     public function exportTurbiditySensors(Request $request)
     {
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+        $startDay = $request->get('start_day');
+        $endDay = $request->get('end_day');
+        
+        // Convert day to full date for current month/year
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $startDate = $startDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay) : null;
+        $endDate = $endDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay) : null;
         
         $filename = 'turbidity_sensors_' . date('Y-m-d_H-i-s') . '.xlsx';
         return Excel::download(new TurbiditySensorsExport($startDate, $endDate), $filename);
@@ -68,8 +92,14 @@ class ExportController extends Controller
      */
     public function exportAllSensors(Request $request)
     {
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+        $startDay = $request->get('start_day');
+        $endDay = $request->get('end_day');
+        
+        // Convert day to full date for current month/year
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $startDate = $startDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay) : null;
+        $endDate = $endDay ? sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay) : null;
         
         $filename = 'all_sensors_data_' . date('Y-m-d_H-i-s') . '.xlsx';
         return Excel::download(new AllSensorsExport($startDate, $endDate), $filename);
@@ -126,17 +156,23 @@ class ExportController extends Controller
         try {
             $perPage = $request->get('per_page', 15);
             $page = $request->get('page', 1);
-            $startDate = $request->get('start_date');
-            $endDate = $request->get('end_date');
+            $startDay = $request->get('start_day');
+            $endDay = $request->get('end_day');
             $sensorName = $request->get('sensor_name');
 
             $query = \App\Models\TemperatureSensor::query();
 
-            if ($startDate) {
+            // Get current month and year
+            $currentYear = date('Y');
+            $currentMonth = date('m');
+
+            if ($startDay) {
+                $startDate = sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay);
                 $query->where('created_at', '>=', $startDate . ' 00:00:00');
             }
 
-            if ($endDate) {
+            if ($endDay) {
+                $endDate = sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay);
                 $query->where('created_at', '<=', $endDate . ' 23:59:59');
             }
 
@@ -169,17 +205,23 @@ class ExportController extends Controller
         try {
             $perPage = $request->get('per_page', 15);
             $page = $request->get('page', 1);
-            $startDate = $request->get('start_date');
-            $endDate = $request->get('end_date');
+            $startDay = $request->get('start_day');
+            $endDay = $request->get('end_day');
             $sensorName = $request->get('sensor_name');
 
             $query = \App\Models\SoilMoistureSensor::query();
 
-            if ($startDate) {
+            // Get current month and year
+            $currentYear = date('Y');
+            $currentMonth = date('m');
+
+            if ($startDay) {
+                $startDate = sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay);
                 $query->where('created_at', '>=', $startDate . ' 00:00:00');
             }
 
-            if ($endDate) {
+            if ($endDay) {
+                $endDate = sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay);
                 $query->where('created_at', '<=', $endDate . ' 23:59:59');
             }
 
@@ -212,17 +254,23 @@ class ExportController extends Controller
         try {
             $perPage = $request->get('per_page', 15);
             $page = $request->get('page', 1);
-            $startDate = $request->get('start_date');
-            $endDate = $request->get('end_date');
+            $startDay = $request->get('start_day');
+            $endDay = $request->get('end_day');
             $sensorName = $request->get('sensor_name');
 
             $query = \App\Models\LightSensor::query();
 
-            if ($startDate) {
+            // Get current month and year
+            $currentYear = date('Y');
+            $currentMonth = date('m');
+
+            if ($startDay) {
+                $startDate = sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay);
                 $query->where('created_at', '>=', $startDate . ' 00:00:00');
             }
 
-            if ($endDate) {
+            if ($endDay) {
+                $endDate = sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay);
                 $query->where('created_at', '<=', $endDate . ' 23:59:59');
             }
 
@@ -255,17 +303,23 @@ class ExportController extends Controller
         try {
             $perPage = $request->get('per_page', 15);
             $page = $request->get('page', 1);
-            $startDate = $request->get('start_date');
-            $endDate = $request->get('end_date');
+            $startDay = $request->get('start_day');
+            $endDay = $request->get('end_day');
             $sensorName = $request->get('sensor_name');
 
             $query = \App\Models\TurbiditySensor::query();
 
-            if ($startDate) {
+            // Get current month and year
+            $currentYear = date('Y');
+            $currentMonth = date('m');
+
+            if ($startDay) {
+                $startDate = sprintf('%s-%s-%02d', $currentYear, $currentMonth, $startDay);
                 $query->where('created_at', '>=', $startDate . ' 00:00:00');
             }
 
-            if ($endDate) {
+            if ($endDay) {
+                $endDate = sprintf('%s-%s-%02d', $currentYear, $currentMonth, $endDay);
                 $query->where('created_at', '<=', $endDate . ' 23:59:59');
             }
 
