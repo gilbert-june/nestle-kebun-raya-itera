@@ -44,8 +44,8 @@ interface PaginatedData {
 }
 
 interface FilterOptions {
-  start_date: string;
-  end_date: string;
+  start_day: number;
+  end_day: number;
 }
 
 interface ExportedFile {
@@ -105,30 +105,33 @@ export class ExportComponent implements OnInit {
   turbidityLoading = false;
   exportedFilesLoading = false;
 
+  // Day options for current month
+  dayOptions: number[] = [];
+
   // Filter options
   temperatureFilters: FilterOptions = {
-    start_date: '',
-    end_date: ''
+    start_day: 1,
+    end_day: 31
   };
 
   soilMoistureFilters: FilterOptions = {
-    start_date: '',
-    end_date: ''
+    start_day: 1,
+    end_day: 31
   };
 
   lightFilters: FilterOptions = {
-    start_date: '',
-    end_date: ''
+    start_day: 1,
+    end_day: 31
   };
 
   turbidityFilters: FilterOptions = {
-    start_date: '',
-    end_date: ''
+    start_day: 1,
+    end_day: 31
   };
 
   allDataFilters: FilterOptions = {
-    start_date: '',
-    end_date: ''
+    start_day: 1,
+    end_day: 31
   };
 
   // Exported files filters
@@ -143,10 +146,62 @@ export class ExportComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeDayOptions();
     this.loadUser();
     this.loadExportStats();
     this.loadAllTables();
     this.loadExportedFiles();
+  }
+
+  /**
+   * Initialize day options for the current month
+   */
+  private initializeDayOptions(): void {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // getMonth() returns 0-11
+    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+    
+    this.dayOptions = Array.from({length: daysInMonth}, (_, i) => i + 1);
+    
+    // Update end_day to the last day of current month
+    this.temperatureFilters.end_day = daysInMonth;
+    this.soilMoistureFilters.end_day = daysInMonth;
+    this.lightFilters.end_day = daysInMonth;
+    this.turbidityFilters.end_day = daysInMonth;
+    this.allDataFilters.end_day = daysInMonth;
+  }
+
+  /**
+   * Get current month and year as string for display
+   */
+  getCurrentMonthYear(): string {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const monthNames = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    return `${monthNames[currentDate.getMonth()]} ${year}`;
+  }
+
+  /**
+   * Get current month and year as string for API calls
+   */
+  private getCurrentMonthYearForAPI(): string {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}`;
+  }
+
+  /**
+   * Convert day to full date string for current month/year
+   */
+  private dayToDateString(day: number): string {
+    const monthYear = this.getCurrentMonthYearForAPI();
+    return `${monthYear}-${day.toString().padStart(2, '0')}`;
   }
 
   loadUser(): void {
@@ -367,33 +422,37 @@ export class ExportComponent implements OnInit {
   }
 
   clearTemperatureFilters(): void {
+    const daysInMonth = this.dayOptions.length;
     this.temperatureFilters = {
-      start_date: '',
-      end_date: ''
+      start_day: 1,
+      end_day: daysInMonth
     };
     this.loadTemperatureData(1);
   }
 
   clearSoilMoistureFilters(): void {
+    const daysInMonth = this.dayOptions.length;
     this.soilMoistureFilters = {
-      start_date: '',
-      end_date: ''
+      start_day: 1,
+      end_day: daysInMonth
     };
     this.loadSoilMoistureData(1);
   }
 
   clearLightFilters(): void {
+    const daysInMonth = this.dayOptions.length;
     this.lightFilters = {
-      start_date: '',
-      end_date: ''
+      start_day: 1,
+      end_day: daysInMonth
     };
     this.loadLightData(1);
   }
 
   clearTurbidityFilters(): void {
+    const daysInMonth = this.dayOptions.length;
     this.turbidityFilters = {
-      start_date: '',
-      end_date: ''
+      start_day: 1,
+      end_day: daysInMonth
     };
     this.loadTurbidityData(1);
   }
@@ -419,8 +478,8 @@ export class ExportComponent implements OnInit {
   private buildQueryParams(filters: FilterOptions, page: number): string {
     const params = new URLSearchParams();
     
-    if (filters.start_date) params.append('start_date', filters.start_date);
-    if (filters.end_date) params.append('end_date', filters.end_date);
+    if (filters.start_day) params.append('start_day', filters.start_day.toString());
+    if (filters.end_day) params.append('end_day', filters.end_day.toString());
     params.append('per_page', '5'); // Fixed limit of 10 items per page
     if (page > 1) params.append('page', page.toString());
     
@@ -429,8 +488,8 @@ export class ExportComponent implements OnInit {
 
   private buildExportQueryParams(filters: FilterOptions): string {
     const params = new URLSearchParams();
-    if (filters.start_date) params.append('start_date', filters.start_date);
-    if (filters.end_date) params.append('end_date', filters.end_date);
+    if (filters.start_day) params.append('start_day', filters.start_day.toString());
+    if (filters.end_day) params.append('end_day', filters.end_day.toString());
     return params.toString();
   }
 

@@ -65,6 +65,83 @@
     @apply w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 font-sans focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 focus:shadow-lg;
   }
 
+  /* Enhanced Select Styles */
+  .form-select {
+    @apply w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl text-base transition-all duration-300 font-sans focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 focus:shadow-lg bg-white cursor-pointer appearance-none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  .form-select:hover {
+    @apply border-gray-300 shadow-md;
+  }
+
+  .form-select:focus {
+    @apply border-primary-500 ring-4 ring-primary-500/10 shadow-lg transform scale-[1.02];
+  }
+
+  /* Enhanced select animations */
+  .form-select {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .form-select:hover {
+    @apply border-gray-300 shadow-md transform scale-[1.01];
+  }
+
+  .form-select option {
+    @apply py-3 px-4 text-gray-700 bg-white border-b border-gray-100 last:border-b-0;
+  }
+
+  .form-select option:hover {
+    @apply bg-primary-50 text-primary-700;
+  }
+
+  .form-select option:checked {
+    @apply bg-primary-100 text-primary-800 font-medium;
+  }
+
+  /* Custom Select Container */
+  .select-container {
+    @apply relative;
+  }
+
+  .select-container::after {
+    @apply absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none transition-transform duration-200;
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #6b7280;
+  }
+
+  .select-container:focus-within::after {
+    @apply transform -translate-y-1/2 rotate-180;
+    border-top-color: #3b82f6;
+  }
+
+  /* Filter container enhancements */
+  .filter-container {
+    @apply transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Enhanced label styling */
+  .filter-label {
+    @apply flex items-center gap-2 text-sm font-medium text-gray-700 mb-2;
+  }
+
+  .filter-label-dot {
+    @apply w-2 h-2 rounded-full transition-all duration-200;
+  }
+
+  .filter-label:hover .filter-label-dot {
+    @apply scale-125;
+  }
+
   /* Alert Styles */
   .alert {
     @apply p-4 rounded-xl mb-6 flex items-center gap-3 border;
