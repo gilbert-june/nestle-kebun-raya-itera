@@ -17,10 +17,10 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="select-container">
-                <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                  <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
-                  Tanggal Mulai
-                </label>
+                                  <label class="filter-label">
+                    <span class="filter-label-dot bg-blue-500"></span>
+                    Tanggal Mulai
+                  </label>
                 <select 
                   [(ngModel)]="allDataFilters.start_day"
                   class="form-select">
@@ -163,7 +163,7 @@
           <!-- Data Table -->
           <div class="mt-6">
             <!-- Filters -->
-            <div class="bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-xl border border-red-200 mb-6">
+            <div class="bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-xl border border-red-200 mb-6 filter-container">
               <div class="flex items-center gap-3 mb-4">
                 <span class="text-red-600 text-xl">🌡️</span>
                 <h5 class="font-semibold text-gray-900">Filter Tanggal</h5>
@@ -171,8 +171,8 @@
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="select-container">
-                  <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                  <label class="filter-label">
+                    <span class="filter-label-dot bg-red-500"></span>
                     Tanggal Mulai
                   </label>
                   <select 
@@ -184,8 +184,8 @@
                   </select>
                 </div>
                 <div class="select-container">
-                  <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                  <label class="filter-label">
+                    <span class="filter-label-dot bg-orange-500"></span>
                     Tanggal Akhir
                   </label>
                   <select 
@@ -311,7 +311,7 @@
           <!-- Data Table -->
           <div class="mt-6">
             <!-- Filters -->
-            <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200 mb-6">
+            <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200 mb-6 filter-container">
               <div class="flex items-center gap-3 mb-4">
                 <span class="text-blue-600 text-xl">💧</span>
                 <h5 class="font-semibold text-gray-900">Filter Tanggal</h5>
@@ -332,8 +332,8 @@
                   </select>
                 </div>
                 <div class="select-container">
-                  <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <span class="w-2 h-2 bg-cyan-500 rounded-full"></span>
+                  <label class="filter-label">
+                    <span class="filter-label-dot bg-cyan-500"></span>
                     Tanggal Akhir
                   </label>
                   <select 
@@ -459,7 +459,7 @@
           <!-- Data Table -->
           <div class="mt-6">
             <!-- Filters -->
-            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-6 rounded-xl border border-yellow-200 mb-6">
+            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-6 rounded-xl border border-yellow-200 mb-6 filter-container">
               <div class="flex items-center gap-3 mb-4">
                 <span class="text-yellow-600 text-xl">💡</span>
                 <h5 class="font-semibold text-gray-900">Filter Tanggal</h5>
@@ -467,8 +467,8 @@
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="select-container">
-                  <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                  <label class="filter-label">
+                    <span class="filter-label-dot bg-yellow-500"></span>
                     Tanggal Mulai
                   </label>
                   <select 
