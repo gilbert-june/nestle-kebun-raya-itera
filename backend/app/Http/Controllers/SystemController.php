@@ -28,7 +28,7 @@ class SystemController extends Controller
     public function toggleActivate(Request $request, $id): JsonResponse
     {
         $system = System::first();
-        $system->is_active = !$system->is_active;
+        $system->is_active = !boolval($system->is_active);
         $system->save();
         return response()->json([
             'success' => true,
