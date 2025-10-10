@@ -13,4 +13,8 @@ class System extends Model
     protected $fillable = [
         'is_active'
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean'
+    ];
 } 
