@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../auth.service';
@@ -9,6 +9,7 @@ import { TurbiditySensorService, SensorData as TurbiditySensorData } from '../tu
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { LayoutComponent } from '../shared/layout/layout';
 import { PaginationComponent } from '../shared/pagination/pagination';
+import { interval, Subscription } from 'rxjs';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -50,7 +51,7 @@ interface PaginatedData {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   user: User | null = null;
   loading = true;
   error = '';
@@ -58,6 +59,9 @@ export class DashboardComponent implements OnInit {
   // System status
   system: { id: number, is_active: boolean } | null = null;
   systemLoading = false;
+
+  // Auto-refresh subscription
+  private dataRefreshSubscription?: Subscription;
 
   // Temperature sensor data
   sensorsData: SensorData[] = [];
@@ -131,7 +135,174 @@ export class DashboardComponent implements OnInit {
         this.loadSoilMoistureTableData();
         this.loadLightTableData();
         this.loadTurbidityTableData();
+
+        // Start auto-refresh for graph data every 3 seconds
+        this.startDataRefresh();
       });
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Clean up subscription when component is destroyed
+    if (this.dataRefreshSubscription) {
+      this.dataRefreshSubscription.unsubscribe();
+    }
+  }
+
+  startDataRefresh(): void {
+    // Unsubscribe from existing subscription if any
+    if (this.dataRefreshSubscription) {
+      this.dataRefreshSubscription.unsubscribe();
+    }
+    // Append new graph data every 3 seconds (3000ms)
+    this.dataRefreshSubscription = interval(3000).subscribe(() => {
+      this.appendNewTemperatureData();
+      this.appendNewSoilMoistureData();
+      this.appendNewLightData();
+      this.appendNewTurbidityData();
+    });
+  }
+
+  // Helper method to get the last timestamp from chart_data
+  private getLastTimestamp(chartData: any[]): string | null {
+    if (!chartData || chartData.length === 0) return null;
+    return chartData[chartData.length - 1]?.x || null;
+  }
+
+  // Append new temperature sensor data
+  appendNewTemperatureData(): void {
+    this.temperatureSensorService.getTemperatureSensors().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          response.data.forEach((newSensor) => {
+            const existingSensor = this.sensorsData.find(s => s.name === newSensor.name);
+            
+            if (existingSensor) {
+              // Get the last timestamp we have
+              const lastTimestamp = this.getLastTimestamp(existingSensor.chart_data);
+              
+              // Find new data points (those with timestamps after our last one)
+              const newDataPoints = newSensor.chart_data.filter(point => {
+                if (!lastTimestamp) return true;
+                return new Date(point.x) > new Date(lastTimestamp);
+              });
+
+              // Append new data points
+              if (newDataPoints.length > 0) {
+                existingSensor.chart_data.push(...newDataPoints);
+                // Update latest value and timestamp
+                existingSensor.latest_value = newSensor.latest_value;
+                existingSensor.latest_timestamp = newSensor.latest_timestamp;
+              }
+            } else {
+              // New sensor, add it completely
+              this.sensorsData.push(newSensor);
+            }
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error appending temperature sensor data:', error);
+      }
+    });
+  }
+
+  // Append new soil moisture sensor data
+  appendNewSoilMoistureData(): void {
+    this.soilMoistureSensorService.getSoilMoistureSensors().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          response.data.forEach((newSensor) => {
+            const existingSensor = this.soilMoistureSensorsData.find(s => s.name === newSensor.name);
+            
+            if (existingSensor) {
+              const lastTimestamp = this.getLastTimestamp(existingSensor.chart_data);
+              
+              const newDataPoints = newSensor.chart_data.filter(point => {
+                if (!lastTimestamp) return true;
+                return new Date(point.x) > new Date(lastTimestamp);
+              });
+
+              if (newDataPoints.length > 0) {
+                existingSensor.chart_data.push(...newDataPoints);
+                existingSensor.latest_value = newSensor.latest_value;
+                existingSensor.latest_timestamp = newSensor.latest_timestamp;
+              }
+            } else {
+              this.soilMoistureSensorsData.push(newSensor);
+            }
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error appending soil moisture sensor data:', error);
+      }
+    });
+  }
+
+  // Append new light sensor data
+  appendNewLightData(): void {
+    this.lightSensorService.getLightSensors().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          response.data.forEach((newSensor) => {
+            const existingSensor = this.lightSensorsData.find(s => s.name === newSensor.name);
+            
+            if (existingSensor) {
+              const lastTimestamp = this.getLastTimestamp(existingSensor.chart_data);
+              
+              const newDataPoints = newSensor.chart_data.filter(point => {
+                if (!lastTimestamp) return true;
+                return new Date(point.x) > new Date(lastTimestamp);
+              });
+
+              if (newDataPoints.length > 0) {
+                existingSensor.chart_data.push(...newDataPoints);
+                existingSensor.latest_value = newSensor.latest_value;
+                existingSensor.latest_timestamp = newSensor.latest_timestamp;
+              }
+            } else {
+              this.lightSensorsData.push(newSensor);
+            }
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error appending light sensor data:', error);
+      }
+    });
+  }
+
+  // Append new turbidity sensor data
+  appendNewTurbidityData(): void {
+    this.turbiditySensorService.getTurbiditySensors().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          response.data.forEach((newSensor) => {
+            const existingSensor = this.turbiditySensorsData.find(s => s.name === newSensor.name);
+            
+            if (existingSensor) {
+              const lastTimestamp = this.getLastTimestamp(existingSensor.chart_data);
+              
+              const newDataPoints = newSensor.chart_data.filter(point => {
+                if (!lastTimestamp) return true;
+                return new Date(point.x) > new Date(lastTimestamp);
+              });
+
+              if (newDataPoints.length > 0) {
+                existingSensor.chart_data.push(...newDataPoints);
+                existingSensor.latest_value = newSensor.latest_value;
+                existingSensor.latest_timestamp = newSensor.latest_timestamp;
+              }
+            } else {
+              this.turbiditySensorsData.push(newSensor);
+            }
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error appending turbidity sensor data:', error);
+      }
     });
   }
 
