@@ -154,12 +154,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.dataRefreshSubscription) {
       this.dataRefreshSubscription.unsubscribe();
     }
-    // Append new graph data every 3 seconds (3000ms)
+    // Append new graph data and refresh table data every 3 seconds (3000ms)
     this.dataRefreshSubscription = interval(3000).subscribe(() => {
+      // Append new data to charts
       this.appendNewTemperatureData();
       this.appendNewSoilMoistureData();
       this.appendNewLightData();
       this.appendNewTurbidityData();
+      
+      // Refresh table data (preserve current page)
+      const tempPage = this.temperatureTableData?.current_page || 1;
+      const soilPage = this.soilMoistureTableData?.current_page || 1;
+      const lightPage = this.lightTableData?.current_page || 1;
+      const turbidityPage = this.turbidityTableData?.current_page || 1;
+      
+      this.loadTemperatureTableData(tempPage);
+      this.loadSoilMoistureTableData(soilPage);
+      this.loadLightTableData(lightPage);
+      this.loadTurbidityTableData(turbidityPage);
     });
   }
 
