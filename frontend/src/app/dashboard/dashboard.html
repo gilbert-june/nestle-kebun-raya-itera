@@ -28,39 +28,36 @@
     <ng-container *ngIf="user?.role && (user?.role == 'ADMIN' || user?.role == 'PENGELOLA')">
       <div class="card mb-8">
         <div class="section-header">
-          <h2 class="text-3xl font-bold text-gray-900 mb-3">⚙️ Status Sistem</h2>
-          <p class="text-gray-600">Kontrol status aktif/nonaktif sistem</p>
+          <h2 class="text-3xl font-bold text-gray-900 mb-3">⚙️ Status Pompa</h2>
+          <p class="text-gray-600">Kontrol status aktif/nonaktif pompa</p>
         </div>
         
-        <div class="flex items-center justify-between p-6 bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl border border-primary-200">
-          <!-- System Status Display -->
-          <div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Status Sistem</h3>
+        <div class="p-6 bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl border border-primary-200">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <!-- System Status Display -->
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Status Pompa</h3>
+              <p class="text-gray-600">Pantau status operasional pompa secara real-time.</p>
+            </div>
+
+            <!-- Status Badge -->
             <div class="flex items-center gap-3" *ngIf="system">
               <div class="status-dot" [class]="system.is_active ? 'status-online' : 'status-offline'"></div>
-              <span class="text-lg font-semibold" [class]="system.is_active ? 'text-success-600' : 'text-gray-500'">
-                {{ system.is_active ? 'Aktif' : 'Nonaktif' }}
+              <span
+                class="px-5 py-2 rounded-full text-sm font-semibold"
+                [class]="system.is_active ? 'bg-success-100 text-success-700' : 'bg-gray-200 text-gray-600'">
+                {{ system.is_active ? 'Pompa Sedang Aktif' : 'Pompa Tidak Aktif' }}
               </span>
             </div>
-            <div class="text-gray-500 mt-2" *ngIf="!system && !systemLoading">
-              Status sistem tidak tersedia
-            </div>
+
+            <!-- Loading / Unavailable States -->
             <div class="flex items-center gap-2 text-gray-500" *ngIf="systemLoading">
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
               <span>Memuat status...</span>
             </div>
-          </div>
-          
-          <!-- Toggle Switch -->
-          <div>
-            <button 
-              class="toggle-switch-button"
-              [class]="system?.is_active ? 'bg-success-500 hover:bg-success-600' : 'bg-gray-300 hover:bg-gray-400'"
-              [disabled]="systemLoading || !system"
-              (click)="toggleSystemActivation()">
-              <span class="toggle-switch-slider" [class]="system?.is_active ? 'translate-x-6' : 'translate-x-0'"></span>
-            </button>
-            <p class="text-sm text-gray-600 mt-2">Klik untuk {{ system?.is_active ? 'menonaktifkan' : 'mengaktifkan' }} sistem</p>
+            <div class="text-gray-500" *ngIf="!system && !systemLoading">
+              Status pompa tidak tersedia
+            </div>
           </div>
         </div>
       </div>

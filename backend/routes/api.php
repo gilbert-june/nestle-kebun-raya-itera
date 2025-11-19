@@ -24,6 +24,9 @@ use App\Http\Controllers\PlantTypeController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::post('/system/pump-status', [SystemController::class, 'updatePumpStatus']);
+Route::get('/system', [SystemController::class, 'index']);
+Route::put('/system/{id}/toggle-access', [SystemController::class, 'toggleActivate']);
 
 // Auth routes
 Route::post('/logout', [AuthController::class, 'logout']);
@@ -58,8 +61,6 @@ Route::get('/turbidity-sensors-names', [TurbiditySensorController::class, 'getSe
 Route::get('/alert', [AlertController::class, 'index']);
 Route::post('/alert/update-alert', [AlertController::class, 'updateAlert']);
 
-Route::get('/system', [SystemController::class, 'index']);
-Route::put('/system/{id}/toggle-access', [SystemController::class, 'toggleActivate']);
 
 // About routes
 Route::get('/about', [AboutController::class, 'index']);

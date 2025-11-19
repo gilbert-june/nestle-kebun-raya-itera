@@ -62,6 +62,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Auto-refresh subscription
   private dataRefreshSubscription?: Subscription;
+  private systemStatusSubscription?: Subscription;
 
   // Temperature sensor data
   sensorsData: SensorData[] = [];
@@ -138,6 +139,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         // Start auto-refresh for graph data every 3 seconds
         this.startDataRefresh();
+        // Start pump status refresh every 1 second
+        this.startSystemStatusRefresh();
       });
     });
   }
@@ -146,6 +149,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Clean up subscription when component is destroyed
     if (this.dataRefreshSubscription) {
       this.dataRefreshSubscription.unsubscribe();
+    }
+    if (this.systemStatusSubscription) {
+      this.systemStatusSubscription.unsubscribe();
     }
   }
 
@@ -358,8 +364,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  getSystem(): void {
-    this.systemLoading = true;
+  getSystem(showLoading: boolean = true): void {
+    if (showLoading) {
+      this.systemLoading = true;
+    }
     this.authService.getWithAuth('/api/system').subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -367,12 +375,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
         } else {
           console.error('Failed to load system status');
         }
-        this.systemLoading = false;
+        if (showLoading) {
+          this.systemLoading = false;
+        }
       },
       error: (error: any) => {
         console.error('Error loading system status:', error);
-        this.systemLoading = false;
+        if (showLoading) {
+          this.systemLoading = false;
+        }
       }
+    });
+  }
+
+  startSystemStatusRefresh(): void {
+    if (this.systemStatusSubscription) {
+      this.systemStatusSubscription.unsubscribe();
+    }
+    this.systemStatusSubscription = interval(1000).subscribe(() => {
+      this.getSystem(false);
     });
   }
 
