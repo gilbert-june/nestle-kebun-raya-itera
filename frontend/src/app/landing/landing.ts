@@ -180,17 +180,57 @@ export class LandingComponent implements OnInit, OnDestroy {
       this.appendNewLightData();
       this.appendNewTurbidityData();
       
-      // Refresh table data (preserve current page)
+      // Refresh table data (preserve current page without showing loaders)
       const tempPage = this.temperatureTableData?.current_page || 1;
       const soilPage = this.soilMoistureTableData?.current_page || 1;
       const lightPage = this.lightTableData?.current_page || 1;
       const turbidityPage = this.turbidityTableData?.current_page || 1;
       
-      this.loadTemperatureTableData(tempPage);
-      this.loadSoilMoistureTableData(soilPage);
-      this.loadLightTableData(lightPage);
-      this.loadTurbidityTableData(turbidityPage);
+      this.loadTemperatureTableData(tempPage, { showLoading: false, appendNew: tempPage === 1 });
+      this.loadSoilMoistureTableData(soilPage, { showLoading: false, appendNew: soilPage === 1 });
+      this.loadLightTableData(lightPage, { showLoading: false, appendNew: lightPage === 1 });
+      this.loadTurbidityTableData(turbidityPage, { showLoading: false, appendNew: turbidityPage === 1 });
     });
+  }
+
+  private mergePaginatedData(existing: PaginatedData, newData: PaginatedData): PaginatedData {
+    if (!existing || !newData || existing.current_page !== 1) {
+      return newData || existing;
+    }
+
+    const latestExistingDate = existing.data[0]?.created_at
+      ? new Date(existing.data[0].created_at).getTime()
+      : null;
+
+    const newRows = newData.data.filter(item => {
+      if (latestExistingDate === null) return true;
+      return new Date(item.created_at).getTime() > latestExistingDate;
+    });
+
+    if (newRows.length === 0) {
+      return existing;
+    }
+
+    const mergedRows = [...newRows, ...existing.data];
+    const uniqueRows: SensorTableData[] = [];
+    const seen = new Set<string>();
+
+    for (const row of mergedRows) {
+      const key = `${row.id}-${row.created_at}`;
+      if (!seen.has(key)) {
+        uniqueRows.push(row);
+        seen.add(key);
+      }
+      if (uniqueRows.length >= existing.per_page) {
+        break;
+      }
+    }
+
+    return {
+      ...newData,
+      data: uniqueRows,
+      per_page: existing.per_page
+    };
   }
 
   // Helper method to get the last timestamp from chart_data
@@ -528,9 +568,7 @@ export class LandingComponent implements OnInit, OnDestroy {
         }
       },
       animations: {
-        enabled: true,
-        easing: 'easeinout',
-        speed: 800
+        enabled: false
       }
     };
   }
@@ -751,8 +789,14 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   // Table data loading methods
-  loadTemperatureTableData(page: number = 1): void {
-    this.temperatureTableLoading = true;
+  loadTemperatureTableData(
+    page: number = 1,
+    options: { showLoading?: boolean; appendNew?: boolean } = {}
+  ): void {
+    const { showLoading = true, appendNew = false } = options;
+    if (showLoading) {
+      this.temperatureTableLoading = true;
+    }
     const params = new URLSearchParams();
     params.append('per_page', '5');
     if (page > 1) params.append('page', page.toString());
@@ -760,21 +804,35 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.authService.getWithAuth(`/api/export/temperature-sensors-data?${params.toString()}`).subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.temperatureTableData = response.data;
+          if (appendNew && this.temperatureTableData && page === 1) {
+            this.temperatureTableData = this.mergePaginatedData(this.temperatureTableData, response.data);
+          } else {
+            this.temperatureTableData = response.data;
+          }
         } else {
           console.error('Failed to load temperature table data');
         }
-        this.temperatureTableLoading = false;
+        if (showLoading) {
+          this.temperatureTableLoading = false;
+        }
       },
       error: (error: any) => {
         console.error('Error loading temperature table data:', error);
-        this.temperatureTableLoading = false;
+        if (showLoading) {
+          this.temperatureTableLoading = false;
+        }
       }
     });
   }
 
-  loadSoilMoistureTableData(page: number = 1): void {
-    this.soilMoistureTableLoading = true;
+  loadSoilMoistureTableData(
+    page: number = 1,
+    options: { showLoading?: boolean; appendNew?: boolean } = {}
+  ): void {
+    const { showLoading = true, appendNew = false } = options;
+    if (showLoading) {
+      this.soilMoistureTableLoading = true;
+    }
     const params = new URLSearchParams();
     params.append('per_page', '5');
     if (page > 1) params.append('page', page.toString());
@@ -782,21 +840,35 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.authService.getWithAuth(`/api/export/soil-moisture-sensors-data?${params.toString()}`).subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.soilMoistureTableData = response.data;
+          if (appendNew && this.soilMoistureTableData && page === 1) {
+            this.soilMoistureTableData = this.mergePaginatedData(this.soilMoistureTableData, response.data);
+          } else {
+            this.soilMoistureTableData = response.data;
+          }
         } else {
           console.error('Failed to load soil moisture table data');
         }
-        this.soilMoistureTableLoading = false;
+        if (showLoading) {
+          this.soilMoistureTableLoading = false;
+        }
       },
       error: (error: any) => {
         console.error('Error loading soil moisture table data:', error);
-        this.soilMoistureTableLoading = false;
+        if (showLoading) {
+          this.soilMoistureTableLoading = false;
+        }
       }
     });
   }
 
-  loadLightTableData(page: number = 1): void {
-    this.lightTableLoading = true;
+  loadLightTableData(
+    page: number = 1,
+    options: { showLoading?: boolean; appendNew?: boolean } = {}
+  ): void {
+    const { showLoading = true, appendNew = false } = options;
+    if (showLoading) {
+      this.lightTableLoading = true;
+    }
     const params = new URLSearchParams();
     params.append('per_page', '5');
     if (page > 1) params.append('page', page.toString());
@@ -804,21 +876,35 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.authService.getWithAuth(`/api/export/light-sensors-data?${params.toString()}`).subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.lightTableData = response.data;
+          if (appendNew && this.lightTableData && page === 1) {
+            this.lightTableData = this.mergePaginatedData(this.lightTableData, response.data);
+          } else {
+            this.lightTableData = response.data;
+          }
         } else {
           console.error('Failed to load light table data');
         }
-        this.lightTableLoading = false;
+        if (showLoading) {
+          this.lightTableLoading = false;
+        }
       },
       error: (error: any) => {
         console.error('Error loading light table data:', error);
-        this.lightTableLoading = false;
+        if (showLoading) {
+          this.lightTableLoading = false;
+        }
       }
     });
   }
 
-  loadTurbidityTableData(page: number = 1): void {
-    this.turbidityTableLoading = true;
+  loadTurbidityTableData(
+    page: number = 1,
+    options: { showLoading?: boolean; appendNew?: boolean } = {}
+  ): void {
+    const { showLoading = true, appendNew = false } = options;
+    if (showLoading) {
+      this.turbidityTableLoading = true;
+    }
     const params = new URLSearchParams();
     params.append('per_page', '5');
     if (page > 1) params.append('page', page.toString());
@@ -826,15 +912,23 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.authService.getWithAuth(`/api/export/turbidity-sensors-data?${params.toString()}`).subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.turbidityTableData = response.data;
+          if (appendNew && this.turbidityTableData && page === 1) {
+            this.turbidityTableData = this.mergePaginatedData(this.turbidityTableData, response.data);
+          } else {
+            this.turbidityTableData = response.data;
+          }
         } else {
           console.error('Failed to load turbidity table data');
         }
-        this.turbidityTableLoading = false;
+        if (showLoading) {
+          this.turbidityTableLoading = false;
+        }
       },
       error: (error: any) => {
         console.error('Error loading turbidity table data:', error);
-        this.turbidityTableLoading = false;
+        if (showLoading) {
+          this.turbidityTableLoading = false;
+        }
       }
     });
   }
